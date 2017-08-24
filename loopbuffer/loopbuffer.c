@@ -1,4 +1,4 @@
-#include "LoopBuffer.h"
+#include "loopbuffer.h"
 
 void init_buffer(*LoopBuffer L_buf, unsigned len) {
     L_buf->buffer = (BYTE*)malloc(len);
@@ -17,9 +17,6 @@ void clean_buffer(*LoopBuffer L_buf) {
     *L_buf = NULL;
 }
 
-// unsigned l =  L_buf->length;
-// unsigned r = L_buf->readPos;
-// unsigned w = L_buf->writePos;
 
 unsigned buffer_data_size(*LoopBuffer L_buf){
     if (!L_buf)
