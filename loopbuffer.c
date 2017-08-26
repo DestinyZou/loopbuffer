@@ -45,16 +45,14 @@ int read_from_buffer(LoopBuffer* L_buf, BYTE* buf, unsigned len) {
     unsigned r = L_buf->readPos;
     unsigned w = L_buf->writePos;
     if (w > r) {
-        if ((r + len) > w)
-            return -1;
-        memcpy(buf, L_buf->buffer, len);
+        memcpy(buf, L_buf->buffer + r, len);
+        L_buf->readPos = r + len;
     } else {
-        if ((r + len - l) > w)
-            return -1;
         memcpy(buf, L_buf->buffer + r, l - r);
         memcpy(buf + l - r, L_buf->buffer, len - (l - r));
+        L_buf->readPos = (r + len) % l;
     }
-    L_buf->readPos = (r + len) % l;
+    return 1;
 }
 
 int write_from_buffer(LoopBuffer* L_buf, BYTE* buf, unsigned len) {
@@ -65,12 +63,14 @@ int write_from_buffer(LoopBuffer* L_buf, BYTE* buf, unsigned len) {
     unsigned l =  L_buf->length;
     unsigned r = L_buf->readPos;
     unsigned w = L_buf->writePos;
-    if (w + len < l) {
+    if (w + len <= l) {
         memcpy(L_buf->buffer + w, buf, len);
+        L_buf->writePos = w + len;
+
     } else {
         memcpy(L_buf->buffer + w, buf, l - w);
         memcpy(L_buf->buffer, buf + l - w, len - (l - w));
+        L_buf->writePos = (w + len) % l;
     }
-    L_buf->writePos = (w + len) % l;
     return 1;
 }
